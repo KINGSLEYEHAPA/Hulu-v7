@@ -6,9 +6,8 @@ import Nav from "../components/Nav";
 import Results from "../components/Results";
 import request from "../utilities/request";
 
-export default function Home({ results, error }) {
+export default function Home({ results }) {
   console.log(results);
-  console.log(error);
   return (
     <div>
       <Head>
@@ -21,7 +20,7 @@ export default function Home({ results, error }) {
 
       <Nav />
       {/* results */}
-      <Results />
+      <Results results={results} />
     </div>
   );
 }
@@ -29,23 +28,16 @@ export default function Home({ results, error }) {
 export async function getServerSideProps(context) {
   const genre = context.query.genre;
 
-  try {
-    const response = await axios.get(
-      `https://api.themoviedb.org/3${
-        request[genre]?.url || request.fetchTrending.url
-      }`
-    );
+  const response = await fetch(
+    `https://api.themoviedb.org/3${
+      request[genre]?.url || request.fetchTrending.url
+    }`
+  );
+  const data = await response.json();
 
-    return {
-      props: {
-        results: response.results,
-      },
-    };
-  } catch (err) {
-    return {
-      props: {
-        error: err.message,
-      },
-    };
-  }
+  return {
+    props: {
+      results: data.results,
+    },
+  };
 }
