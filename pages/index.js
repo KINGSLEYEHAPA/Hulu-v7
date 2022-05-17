@@ -1,9 +1,14 @@
+import axios from "axios";
 import Head from "next/head";
 import Image from "next/image";
 import Header from "../components/Header";
 import Nav from "../components/Nav";
+import Results from "../components/Results";
+import request from "../utilities/request";
 
-export default function Home() {
+export default function Home({ results, error }) {
+  console.log(results);
+  console.log(error);
   return (
     <div>
       <Head>
@@ -13,9 +18,34 @@ export default function Home() {
       </Head>
 
       <Header />
-      {/* navigation */}
+
       <Nav />
       {/* results */}
+      <Results />
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  const genre = context.query.genre;
+
+  try {
+    const response = await axios.get(
+      `https://api.themoviedb.org/3${
+        request[genre]?.url || request.fetchTrending.url
+      }`
+    );
+
+    return {
+      props: {
+        results: response.results,
+      },
+    };
+  } catch (err) {
+    return {
+      props: {
+        error: err.message,
+      },
+    };
+  }
 }
