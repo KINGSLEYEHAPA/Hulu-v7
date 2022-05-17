@@ -19,7 +19,7 @@ export default function Home({ results }) {
       <Header />
 
       <Nav />
-      {/* results */}
+
       <Results results={results} />
     </div>
   );
